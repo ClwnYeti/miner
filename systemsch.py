@@ -1,8 +1,11 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
 from PyQt5.QtWidgets import QInputDialog, QButtonGroup
-from PyQt5 import QtWidgets, Qt, QtCore
+from PyQt5 import QtWidgets,  Qt, QtCore
+from PyQt5.Qt import QPixmap
 from random import choice
+
+flag = QPixmap('flag.png')
 
 
 class GameOver(Exception):
@@ -26,16 +29,15 @@ class PushButtonRight(QPushButton):
         elif event.button() == Qt.Qt.RightButton:
             self.right_click.emit()
             if self.game:
-                if self.text() == 'F':
-                    self.setText('')
+                if not(self.press):
                     self.press = True
-                elif self.text() == '':
-                    self.setText('F')
+                else:
                     self.press = False
         QPushButton.mousePressEvent(self, event)
 
 class Pole:
     def __init__(self, x, y, nx, ny, bombs):
+        self.flag = QPixmap('flag.png')
         self.nx = nx
         self.ny = ny
         self.bombs = bombs
