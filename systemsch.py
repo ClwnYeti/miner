@@ -128,7 +128,7 @@ class Example(QWidget):
         self.show()
 
     def restart(self):
-        self.k = set()
+        self.k = set(m,ko)
         self.game = True
         for f in range(25):
             for j in range(25):
