@@ -2,10 +2,12 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
 from PyQt5.QtWidgets import QInputDialog, QButtonGroup
 from PyQt5 import QtWidgets,  Qt, QtCore
-from PyQt5.Qt import QPixmap
+from PyQt5.QtGui import QPixmap
 from random import choice
 
 flag = QPixmap('flag.png')
+pole = QPixmap('pole.png')
+bomb = QPixmap('pole.png')
 
 
 class GameOver(Exception):
@@ -24,20 +26,23 @@ class PushButtonRight(QPushButton):
         super().__init__(string)
 
     def mousePressEvent(self, event):
+        global pole
+        global flag
         if event.button() == Qt.Qt.LeftButton:
             self.left_click.emit()
         elif event.button() == Qt.Qt.RightButton:
             self.right_click.emit()
             if self.game:
                 if not(self.press):
+                    self.setQPixmap(pole)
                     self.press = True
                 else:
+                    self.setQPixmap(flag)
                     self.press = False
         QPushButton.mousePressEvent(self, event)
 
 class Pole:
     def __init__(self, x, y, nx, ny, bombs):
-        self.flag = QPixmap('flag.png')
         self.nx = nx
         self.ny = ny
         self.bombs = bombs
@@ -130,7 +135,7 @@ class Example(QWidget):
         self.show()
 
     def restart(self):
-        self.k = set(m,ko)
+        self.k = set()
         self.game = True
         for f in range(25):
             for j in range(25):
@@ -202,11 +207,16 @@ class Example(QWidget):
                 self.b[i * 25 + f].setText('B')
                 self.b[i * 25 + f].game = False
     def gameover(self):
+        global bomb
         for i in range(25):
             for f in range(25):
                 self.b[i * 25 + f].game = False
                 if self.l[i * 25 + f].text() == 'B':
-                    self.b[i * 25 + f].setStyleSheet("background-color: #000000")
+                    self.setQPixmap(bomb)
+                    if self.b[i * 25 + f].press:
+                        self.b[i * 25 + f].setStyleSheet("background-color: #FF0000")
+                    else:
+                        self.b[i * 25 + f].setStyleSheet("background-color: #7CFC00")
                 else:
                     self.b[i * 25 + f].setStyleSheet("background-color: #FF0000")
         self.game = False
