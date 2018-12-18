@@ -2,12 +2,9 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
 from PyQt5.QtWidgets import QInputDialog, QButtonGroup
 from PyQt5 import QtWidgets,  Qt, QtCore
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize
 from random import choice
-
-flag = QPixmap('flag.png')
-pole = QPixmap('pole.png')
-bomb = QPixmap('pole.png')
 
 
 class GameOver(Exception):
@@ -26,20 +23,23 @@ class PushButtonRight(QPushButton):
         super().__init__(string)
 
     def mousePressEvent(self, event):
-        global pole
-        global flag
         if event.button() == Qt.Qt.LeftButton:
             self.left_click.emit()
+            if self.game and self.press:
+                self.pole.xod(self)
         elif event.button() == Qt.Qt.RightButton:
             self.right_click.emit()
             if self.game:
                 if not(self.press):
-                    self.setQPixmap(pole)
+                    self.setIcon(QIcon('pole.png'))
+                    self.setIconSize(QSize(25, 25))
                     self.press = True
                 else:
-                    self.setQPixmap(flag)
+                    self.setIcon(QIcon('flag.png'))
+                    self.setIconSize(QSize(25, 25))
                     self.press = False
-        QPushButton.mousePressEvent(self, event)
+
+
 
 class Pole:
     def __init__(self, x, y, nx, ny, bombs):
@@ -107,6 +107,7 @@ class Example(QWidget):
         self.button_1.setText("Настройка")
         self.button_1.clicked.connect(self.run)
         self.b_pole = QButtonGroup(self)
+        self.l_pole = QButtonGroup(self)
         self.b = []
         self.l = []
         self.button_2 = QPushButton(self)
@@ -117,21 +118,27 @@ class Example(QWidget):
         for f in range(25):
             for j in range(25):
                 exec(f'self.b{f * 25 + j} = PushButtonRight(self)')
+                exec(f'self.b{f * 25 + j}.pole = self')
                 exec(f'self.b{f * 25 + j}.resize(25, 25)')
                 exec(f'self.b{f * 25 + j}.move({j * 25 + 20},{f * 25 + 50})')
                 exec(f'self.b{f * 25 + j}.x = {j}')
                 exec(f'self.b{f * 25 + j}.y = {f}')
                 exec(f'self.b{f * 25 + j}.hide()')
                 exec(f'self.b{f * 25 + j}.press = True')
-                exec(f'self.l{f * 25 + j} = QLabel(self)')
-                exec(f'self.l{f * 25 + j}.resize(20, 20)')
-                exec(f'self.l{f * 25 + j}.move({j * 25 + 30},{f * 25 + 50})')
+                exec(f'self.l{f * 25 + j} = QPushButton(self)')
+                exec(f'self.l{f * 25 + j}.resize(25, 25)')
+                exec(f'self.l{f * 25 + j}.move({j * 25 + 20},{f * 25 + 50})')
+                exec(f'self.l{f * 25 + j}.x = {j}')
+                exec(f'self.l{f * 25 + j}.y = {f}')
+                exec(f'self.l{f * 25 + j}.setStyleSheet("background-color: #DCDCDC")')
                 exec(f'self.l{f * 25 + j}.hide()')
                 exec(f'self.b_pole.addButton(self.b{f * 25 + j})')
+                exec(f'self.l_pole.addButton(self.l{f * 25 + j})')
                 exec(f'self.b.append(self.b{f * 25 + j})')
                 exec(f'self.l.append(self.l{f * 25 + j})')
         self.game = True
         self.b_pole.buttonClicked.connect(self.xod)
+        self.l_pole.buttonClicked.connect(self.otkr)
         self.show()
 
     def restart(self):
@@ -140,7 +147,10 @@ class Example(QWidget):
         for f in range(25):
             for j in range(25):
                 self.b[f * 25 + j].game = True
+                self.l[f * 25 + j].game = True
                 self.b[f * 25 + j].hide()
+                self.b[f * 25 + j].setIcon(QIcon('pole.png'))
+                self.b[f * 25 + j].setIconSize(QSize(25, 25))
                 self.b[f * 25 + j].setStyleSheet(
                     "background-color: #FFFFFF"
                 )
@@ -183,7 +193,7 @@ class Example(QWidget):
                 if self.l[button.y * 25 + button.x].text() == 'B':
                     raise GameOver
                 elif self.l[button.y * 25 + button.x].text() == '':
-                    self.otkr(button.x, button.y)
+                    self.otkr(button)
                 button.hide()
                 self.l[button.y * 25 + button.x].show()
                 n = 0
@@ -204,7 +214,8 @@ class Example(QWidget):
                 self.b[i * 25 + f].setStyleSheet(
                     "background-color: #7CFC00"
                 )
-                self.b[i * 25 + f].setText('B')
+                self.b[i * 25 + f].setIcon(QIcon('bomb.png'))
+                self.b[i * 25 + f].setIconSize(QSize(25, 25))
                 self.b[i * 25 + f].game = False
     def gameover(self):
         global bomb
@@ -212,7 +223,9 @@ class Example(QWidget):
             for f in range(25):
                 self.b[i * 25 + f].game = False
                 if self.l[i * 25 + f].text() == 'B':
-                    self.setQPixmap(bomb)
+                    self.b[i * 25 + f].setIcon(QIcon('bomb.png'))
+                    self.b[i * 25 + f].setIconSize(QSize(25, 25))
+
                     if self.b[i * 25 + f].press:
                         self.b[i * 25 + f].setStyleSheet("background-color: #FF0000")
                     else:
@@ -221,24 +234,71 @@ class Example(QWidget):
                     self.b[i * 25 + f].setStyleSheet("background-color: #FF0000")
         self.game = False
 
-    def otkr(self, x, y):
-        self.k.add((x, y))
+    def otkr(self, button):
+        self.k.add(button)
         a = set()
-        for f in range(-1, 2):
-            for i in range(-1, 2):
-                try:
-                    if x + i == -1 or y + f == -1 or (x + i == x and y + f == y) \
-                            or x + i >= self.nx or y + f >= self.ny:
-                        raise IndexError
-                    if self.l[(y + f) * 25 + x + i].text() == '':
-                        a.add((x + i, y + f))
-                    self.b[(y + f) * 25 + x + i].hide()
-                    self.l[(y + f) * 25 + x + i].show()
-                except IndexError:
-                    continue
-        for i in a:
-            if i not in self.k:
-                self.otkr(i[0], i[1])
+        if button.text() == '':
+            for f in range(-1, 2):
+                for i in range(-1, 2):
+                    try:
+                        if button.x + i == -1 or button.y + f == -1 or \
+                                (button.x + i == button.x and button.y + f == button.y) \
+                                or button.x + i >= self.nx or button.y + f >= self.ny:
+                            raise IndexError
+                        if self.l[(button.y + f) * 25 + button.x + i].text() == '':
+                            a.add(self.b[(button.y + f) * 25 + button.x + i])
+                        self.b[(button.y + f) * 25 + button.x + i].hide()
+                        self.l[(button.y + f) * 25 + button.x + i].show()
+                    except IndexError:
+                        continue
+            for i in a:
+                if i not in self.k:
+                    self.otkr(i)
+        else:
+            n = 0
+            for f in range(-1, 2):
+                for i in range(-1, 2):
+                    try:
+                        if (i == 0 and f == 0) or button.x + i == -1 or button.y + f == -1 or \
+                            button.x + i == self.nx or button.y + f == self.ny:
+                              raise IndexError
+                        if not(self.b[(button.y + f) * 25 + button.x + i].isHidden()) and \
+                            not(self.b[(button.y + f) * 25 + button.x + i].press):
+                            n += 1
+                        if self.l[(button.y + f) * 25 + button.x + i].text() == '':
+                            a.add(self.b[(button.y + f) * 25 + button.x + i])
+                    except IndexError:
+                        continue
+            if n >= int(self.l[(button.y) * 25 + button.x].text()):
+                for f in range(-1, 2):
+                    for i in range(-1, 2):
+                        try:
+                            if (i == 0 and f == 0) or button.x + i == -1 or button.y + f == -1 or \
+                                                    button.x + i == self.nx or button.y + f == self.ny:
+                                raise IndexError
+                            if not (self.b[(button.y + f) * 25 + button.x + i].isHidden()) and \
+                                    not (self.b[(button.y + f) * 25 + button.x + i].press):
+                                n += 1
+                            if self.l[(button.y + f) * 25 + button.x + i].text() == '':
+                                a.add(self.b[(button.y + f) * 25 + button.x + i])
+                        except IndexError:
+                            continue
+                        if self.b[(button.y + f) * 25 + button.x + i].press:
+                            if self.l[(button.y + f) * 25 + button.x + i].text() == 'B':
+                                self.gameover()
+                            else:
+                                self.b[(button.y + f) * 25 + button.x + i].hide()
+                                self.l[(button.y + f) * 25 + button.x + i].show()
+            for i in range(self.ny):
+                for f in range(self.nx):
+                    if self.l[i * 25 + f].text() != 'B' and \
+                            self.b[i * 25 + f].isHidden():
+                        n += 1
+            if n == self.nx * self.ny - self.bombs:
+                self.win()
+            for i in a:
+                if i not in self.k:
+                    self.otkr(i)
 
 
 if __name__ == '__main__':
