@@ -101,7 +101,7 @@ class Example(QWidget):
     def initUI(self):
         self.k = set()
         self.setGeometry(50, 50, 200, 100)
-        self.setWindowTitle('Диалоговые окна')
+        self.setWindowTitle('Сапёр')
         self.button_1 = QPushButton(self)
         self.button_1.move(20, 20)
         self.button_1.setText("Настройка")
@@ -147,6 +147,7 @@ class Example(QWidget):
         for f in range(25):
             for j in range(25):
                 self.b[f * 25 + j].game = True
+                self.b[f * 25 + j].press = True
                 self.l[f * 25 + j].game = True
                 self.b[f * 25 + j].hide()
                 self.b[f * 25 + j].setIcon(QIcon('pole.png'))
@@ -276,11 +277,6 @@ class Example(QWidget):
                             if (i == 0 and f == 0) or button.x + i == -1 or button.y + f == -1 or \
                                                     button.x + i == self.nx or button.y + f == self.ny:
                                 raise IndexError
-                            if not (self.b[(button.y + f) * 25 + button.x + i].isHidden()) and \
-                                    not (self.b[(button.y + f) * 25 + button.x + i].press):
-                                n += 1
-                            if self.l[(button.y + f) * 25 + button.x + i].text() == '':
-                                a.add(self.b[(button.y + f) * 25 + button.x + i])
                         except IndexError:
                             continue
                         if self.b[(button.y + f) * 25 + button.x + i].press:
@@ -289,12 +285,13 @@ class Example(QWidget):
                             else:
                                 self.b[(button.y + f) * 25 + button.x + i].hide()
                                 self.l[(button.y + f) * 25 + button.x + i].show()
+            m = 0
             for i in range(self.ny):
                 for f in range(self.nx):
                     if self.l[i * 25 + f].text() != 'B' and \
                             self.b[i * 25 + f].isHidden():
-                        n += 1
-            if n == self.nx * self.ny - self.bombs:
+                        m += 1
+            if m == self.nx * self.ny - self.bombs:
                 self.win()
             for i in a:
                 if i not in self.k:
