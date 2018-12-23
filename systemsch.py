@@ -67,7 +67,6 @@ class Pole:
                 if self.vid[i][f] == '':
                     self.checkdesk(i, f)
 
-
     def checkdesk(self, x, y):
         n = 0
         for i in range(-1, 2):
@@ -197,27 +196,27 @@ class Example(QWidget):
                     self.otkr(button)
                 button.hide()
                 self.l[button.y * 25 + button.x].show()
-                n = 0
-                for i in range(self.ny):
-                    for f in range(self.nx):
-                        if self.l[i * 25 + f].text() != 'B' and \
-                            self.b[i * 25 + f].isHidden():
-                            n += 1
-                if n == self.nx * self.ny - self.bombs:
-                    raise Win
+                self.win()
         except GameOver:
             self.gameover()
-        except Win:
-            self.win()
+
     def win(self):
-        for i in range(25):
-            for f in range(25):
-                self.b[i * 25 + f].setStyleSheet(
-                    "background-color: #7CFC00"
-                )
-                self.b[i * 25 + f].setIcon(QIcon('bomb.png'))
-                self.b[i * 25 + f].setIconSize(QSize(25, 25))
-                self.b[i * 25 + f].game = False
+        m = 0
+        for i in range(self.ny):
+            for f in range(self.nx):
+                if self.l[i * 25 + f].text() != 'B' and \
+                        self.b[i * 25 + f].isHidden():
+                    m += 1
+        if m == self.nx * self.ny - self.bombs:
+            for i in range(25):
+                for f in range(25):
+                    self.b[i * 25 + f].setStyleSheet(
+                        "background-color: #7CFC00"
+                    )
+                    self.b[i * 25 + f].setIcon(QIcon('bomb.png'))
+                    self.b[i * 25 + f].setIconSize(QSize(25, 25))
+                    self.b[i * 25 + f].game = False
+
     def gameover(self):
         global bomb
         for i in range(25):
@@ -285,14 +284,7 @@ class Example(QWidget):
                             else:
                                 self.b[(button.y + f) * 25 + button.x + i].hide()
                                 self.l[(button.y + f) * 25 + button.x + i].show()
-            m = 0
-            for i in range(self.ny):
-                for f in range(self.nx):
-                    if self.l[i * 25 + f].text() != 'B' and \
-                            self.b[i * 25 + f].isHidden():
-                        m += 1
-            if m == self.nx * self.ny - self.bombs:
-                self.win()
+            self.win()
             for i in a:
                 if i not in self.k:
                     self.otkr(i)
