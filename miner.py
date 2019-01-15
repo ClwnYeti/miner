@@ -98,6 +98,7 @@ class Example(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.n = 50
         self.k = set()
         self.setGeometry(50, 50, 200, 100)
         self.setWindowTitle('Сапёр')
@@ -115,27 +116,27 @@ class Example(QWidget):
         self.button_2.clicked.connect(self.restart)
         self.button_2.hide()
         for f in range(25):
-            for j in range(25):
-                exec(f'self.b{f * 25 + j} = PushButtonRight(self)')
-                exec(f'self.b{f * 25 + j}.pole = self')
-                exec(f'self.b{f * 25 + j}.resize(25, 25)')
-                exec(f'self.b{f * 25 + j}.move({j * 25 + 20},{f * 25 + 50})')
-                exec(f'self.b{f * 25 + j}.x = {j}')
-                exec(f'self.b{f * 25 + j}.y = {f}')
-                exec(f'self.b{f * 25 + j}.hide()')
-                exec(f'self.b{f * 25 + j}.press = True')
-                exec(f'self.l{f * 25 + j} = QPushButton(self)')
-                exec(f'self.l{f * 25 + j}.resize(25, 25)')
-                exec(f'self.l{f * 25 + j}.move({j * 25 + 20},{f * 25 + 50})')
-                exec(f'self.l{f * 25 + j}.x = {j}')
-                exec(f'self.l{f * 25 + j}.y = {f}')
-                exec(f'self.l{f * 25 + j}.setStyleSheet'
+            for j in range(self.n):
+                exec(f'self.b{f * self.n + j} = PushButtonRight(self)')
+                exec(f'self.b{f * self.n + j}.pole = self')
+                exec(f'self.b{f * self.n + j}.resize(25, 25)')
+                exec(f'self.b{f * self.n + j}.move({j * 25 + 20},{f * 25 + 50})')
+                exec(f'self.b{f * self.n + j}.x = {j}')
+                exec(f'self.b{f * self.n + j}.y = {f}')
+                exec(f'self.b{f * self.n + j}.hide()')
+                exec(f'self.b{f * self.n + j}.press = True')
+                exec(f'self.l{f * self.n + j} = QPushButton(self)')
+                exec(f'self.l{f * self.n + j}.resize(25, 25)')
+                exec(f'self.l{f * self.n + j}.move({j * 25 + 20},{f * 25 + 50})')
+                exec(f'self.l{f * self.n + j}.x = {j}')
+                exec(f'self.l{f * self.n + j}.y = {f}')
+                exec(f'self.l{f * self.n + j}.setStyleSheet'
                      f'("background-color: #DCDCDC")')
-                exec(f'self.l{f * 25 + j}.hide()')
-                exec(f'self.b_pole.addButton(self.b{f * 25 + j})')
-                exec(f'self.l_pole.addButton(self.l{f * 25 + j})')
-                exec(f'self.b.append(self.b{f * 25 + j})')
-                exec(f'self.l.append(self.l{f * 25 + j})')
+                exec(f'self.l{f * self.n + j}.hide()')
+                exec(f'self.b_pole.addButton(self.b{f * self.n + j})')
+                exec(f'self.l_pole.addButton(self.l{f * self.n + j})')
+                exec(f'self.b.append(self.b{f * self.n + j})')
+                exec(f'self.l.append(self.l{f * self.n + j})')
         self.game = True
         self.b_pole.buttonClicked.connect(self.xod)
         self.l_pole.buttonClicked.connect(self.otkr)
@@ -145,25 +146,25 @@ class Example(QWidget):
         self.k = set()
         self.game = True
         for f in range(25):
-            for j in range(25):
-                self.b[f * 25 + j].game = True
-                self.b[f * 25 + j].press = True
-                self.l[f * 25 + j].game = True
-                self.b[f * 25 + j].hide()
-                self.b[f * 25 + j].setIcon(QIcon('pole.png'))
-                self.b[f * 25 + j].setIconSize(QSize(25, 25))
-                self.b[f * 25 + j].setStyleSheet(
+            for j in range(self.n):
+                self.b[f * self.n + j].game = True
+                self.b[f * self.n + j].press = True
+                self.l[f * self.n + j].game = True
+                self.b[f * self.n + j].hide()
+                self.b[f * self.n + j].setIcon(QIcon('pole.png'))
+                self.b[f * self.n + j].setIconSize(QSize(25, 25))
+                self.b[f * self.n + j].setStyleSheet(
                     "background-color: #FFFFFF"
                 )
-                self.b[f * 25 + j].setText('')
-                self.l[f * 25 + j].hide()
+                self.b[f * self.n + j].setText('')
+                self.l[f * self.n + j].hide()
         self.isgenereted = True
         for f in range(25):
-            for j in range(25):
+            for j in range(self.n):
                 if j < self.nx and f < self.ny:
-                    self.b[f * 25 + j].show()
+                    self.b[f * self.n + j].show()
                 else:
-                    self.b[f * 25 + j].hide()
+                    self.b[f * self.n + j].hide()
                 if self.nx > 6:
                     self.button_2.move(self.nx * 25 - 55, 20)
                     self.setGeometry(50, 50, self.nx * 25 + 40,
@@ -189,16 +190,16 @@ class Example(QWidget):
             self.pole = Pole(button.x, button.y, self.nx, self.ny, self.bombs)
             for i in range(self.ny):
                 for f in range(self.nx):
-                    self.l[i * 25 + f].setText(self.pole.vid[f][i])
+                    self.l[i * self.n + f].setText(self.pole.vid[f][i])
             self.isgenereted = False
         try:
             if button.text() == '' and button.game:
-                if self.l[button.y * 25 + button.x].text() == 'B':
+                if self.l[button.y * self.n + button.x].text() == 'B':
                     raise GameOver
-                elif self.l[button.y * 25 + button.x].text() == '':
+                elif self.l[button.y * self.n + button.x].text() == '':
                     self.otkr(button)
                 button.hide()
-                self.l[button.y * 25 + button.x].show()
+                self.l[button.y * self.n + button.x].show()
                 self.win()
         except GameOver:
             self.gameover()
@@ -207,37 +208,37 @@ class Example(QWidget):
         m = 0
         for i in range(self.ny):
             for f in range(self.nx):
-                if self.l[i * 25 + f].text() != 'B' and \
-                        self.b[i * 25 + f].isHidden():
+                if self.l[i * self.n + f].text() != 'B' and \
+                        self.b[i * self.n + f].isHidden():
                     m += 1
         if m == self.nx * self.ny - self.bombs:
             for i in range(25):
-                for f in range(25):
-                    self.b[i * 25 + f].setStyleSheet(
+                for f in range(self.n):
+                    self.b[i * self.n + f].setStyleSheet(
                         "background-color: #7CFC00"
                     )
-                    self.b[i * 25 + f].setIcon(QIcon('bomb.png'))
-                    self.b[i * 25 + f].setIconSize(QSize(25, 25))
-                    self.b[i * 25 + f].game = False
+                    self.b[i * self.n + f].setIcon(QIcon('bomb.png'))
+                    self.b[i * self.n + f].setIconSize(QSize(25, 25))
+                    self.b[i * self.n + f].game = False
 
 
     def gameover(self):
         global bomb
         for i in range(25):
-            for f in range(25):
-                self.b[i * 25 + f].game = False
-                if self.l[i * 25 + f].text() == 'B':
-                    self.b[i * 25 + f].setIcon(QIcon('bomb.png'))
-                    self.b[i * 25 + f].setIconSize(QSize(25, 25))
+            for f in range(self.n):
+                self.b[i * self.n + f].game = False
+                if self.l[i * self.n + f].text() == 'B':
+                    self.b[i * self.n + f].setIcon(QIcon('bomb.png'))
+                    self.b[i * self.n + f].setIconSize(QSize(25, 25))
 
-                    if self.b[i * 25 + f].press:
-                        self.b[i * 25
+                    if self.b[i * self.n + f].press:
+                        self.b[i * self.n
                                + f].setStyleSheet("background-color: #FF0000")
                     else:
-                        self.b[i * 25
+                        self.b[i * self.n
                                + f].setStyleSheet("background-color: #7CFC00")
                 else:
-                    self.b[i * 25
+                    self.b[i * self.n
                            + f].setStyleSheet("background-color: #FF0000")
         self.game = False
 
@@ -254,11 +255,11 @@ class Example(QWidget):
                                 or button.x + i >= self.nx or \
                                 button.y + f >= self.ny:
                             raise IndexError
-                        if self.l[(button.y + f) * 25 +
+                        if self.l[(button.y + f) * self.n +
                                   button.x + i].text() == '':
-                            a.add(self.b[(button.y + f) * 25 + button.x + i])
-                        self.b[(button.y + f) * 25 + button.x + i].hide()
-                        self.l[(button.y + f) * 25 + button.x + i].show()
+                            a.add(self.b[(button.y + f) * self.n + button.x + i])
+                        self.b[(button.y + f) * self.n + button.x + i].hide()
+                        self.l[(button.y + f) * self.n + button.x + i].show()
                     except IndexError:
                         continue
             for i in a:
@@ -276,20 +277,20 @@ class Example(QWidget):
                                                 button.y + f == self.ny:
                             raise IndexError
                         if not(
-                               self.b[(button.y + f) * 25 +
+                               self.b[(button.y + f) * self.n +
                                       button.x + i].isHidden()
                         ) and \
                             not(
-                                self.b[(button.y + f) * 25 +
+                                self.b[(button.y + f) * self.n +
                                        button.x + i].press
                                 ):
                             n += 1
-                        if self.l[(button.y + f) * 25 +
+                        if self.l[(button.y + f) * self.n +
                                   button.x + i].text() == '':
-                            a.add(self.b[(button.y + f) * 25 + button.x + i])
+                            a.add(self.b[(button.y + f) * self.n + button.x + i])
                     except IndexError:
                         continue
-            if n >= int(self.l[button.y * 25 + button.x].text()):
+            if n >= int(self.l[button.y * self.n + button.x].text()):
                 for f in range(-1, 2):
                     for i in range(-1, 2):
                         try:
@@ -300,13 +301,13 @@ class Example(QWidget):
                                 raise IndexError
                         except IndexError:
                             continue
-                        if self.b[(button.y + f) * 25 + button.x + i].press:
-                            if self.l[(button.y + f) * 25 +
+                        if self.b[(button.y + f) * self.n + button.x + i].press:
+                            if self.l[(button.y + f) * self.n +
                                       button.x + i].text() == 'B':
                                 self.gameover()
                             else:
-                                self.b[(button.y + f) * 25 + button.x + i].hide()
-                                self.l[(button.y + f) * 25 + button.x + i].show()
+                                self.b[(button.y + f) * self.n + button.x + i].hide()
+                                self.l[(button.y + f) * self.n + button.x + i].show()
             self.win()
             for i in a:
                 if i not in self.k:
