@@ -31,11 +31,11 @@ class PushButtonRight(QPushButton):
             self.right_click.emit()
             if self.game:
                 if not(self.press):
-                    self.setIcon(QIcon('pole.png'))
+                    self.setIcon(QIcon('im/pole.png'))
                     self.setIconSize(QSize(25, 25))
                     self.press = True
                 else:
-                    self.setIcon(QIcon('flag.png'))
+                    self.setIcon(QIcon('im/flag.png'))
                     self.setIconSize(QSize(25, 25))
                     self.press = False
 
@@ -151,7 +151,7 @@ class Example(QWidget):
                 self.b[f * self.n + j].press = True
                 self.l[f * self.n + j].game = True
                 self.b[f * self.n + j].hide()
-                self.b[f * self.n + j].setIcon(QIcon('pole.png'))
+                self.b[f * self.n + j].setIcon(QIcon('im/pole.png'))
                 self.b[f * self.n + j].setIconSize(QSize(25, 25))
                 self.b[f * self.n + j].setStyleSheet(
                     "background-color: #FFFFFF"
@@ -217,7 +217,7 @@ class Example(QWidget):
                     self.b[i * self.n + f].setStyleSheet(
                         "background-color: #7CFC00"
                     )
-                    self.b[i * self.n + f].setIcon(QIcon('bomb.png'))
+                    self.b[i * self.n + f].setIcon(QIcon('im/bomb.png'))
                     self.b[i * self.n + f].setIconSize(QSize(25, 25))
                     self.b[i * self.n + f].game = False
 
@@ -228,7 +228,7 @@ class Example(QWidget):
             for f in range(self.n):
                 self.b[i * self.n + f].game = False
                 if self.l[i * self.n + f].text() == 'B':
-                    self.b[i * self.n + f].setIcon(QIcon('bomb.png'))
+                    self.b[i * self.n + f].setIcon(QIcon('im/bomb.png'))
                     self.b[i * self.n + f].setIconSize(QSize(25, 25))
 
                     if self.b[i * self.n + f].press:
